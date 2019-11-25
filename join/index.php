@@ -1,6 +1,7 @@
 <?php
-// セッションストレージに入力内容を保存して確認画面に表示するための準備
+// セッションに入力内容を保存して確認画面に表示するための準備
 session_start();
+require('../dbconnect.php');
 
 // ポストされた時に入力エラーがないか確認
 if (!empty($_POST)){
@@ -20,12 +21,39 @@ if (!empty($_POST)){
 	$error['password'] = 'blank';
 	}
 
+	//アカウントの重複をチェック
+     // if(empty($error)){
+	// $member = $db->prepare('SELECT COUNT (*) AS cnt FROM members WHERE email=?');
+	// $member->excute(array($_POST['email']));
+	// $record = $member->fetch();
+	// if($record['cnt'] > 0){
+	// 	$error['email'] = 'duplicate';
+	// 	}
+	// }
+
 	if (empty($error)) {
+	// 画像のアップロード
+	$image = date('YmdHis').$_FILES['image']['name'];
+	move_uploaded_file($_FILES['image']['tmp_name'],'../member_picture/' .$image);
 	// 入力内容にエラーがない場合、セッションストレージに入力内容を保存
 	$_SESSION['join'] = $_POST;
+	$_SESSION['join']['image'] = $image;
 	header('Location: check.php');
 	exit();
 	}
+	// ファイルのアップロードを画像ファイルのみ許可する
+	$fileName = $_FILES['image']['name'];
+	if(!empty($fileName)){
+		$ext = substr($fileName, -3);
+		if($ext != 'jpg' && $ext != 'gif' && $ext != 'png'){
+		$error['image'] = 'type';
+		}
+	}
+}
+
+// 再編集で呼び出された時の処理
+if ($_REQUEST['action'] == 'rewrite' && isset($_SESSION['join'])){
+	$_POST =$_SESSION['join'];
 }
 
 ?>
@@ -48,6 +76,7 @@ if (!empty($_POST)){
 
 <div id="content">
 <p>次のフォームに必要事項をご記入ください。</p>
+<!-- ファイルをアップロードする場合、enctype属性が必要なので決まり文句的に記述 -->
 <form action="" method="post" enctype="multipart/form-data">
 	<dl>
 		<dt>ニックネーム<span class="required">必須</span></dt>
@@ -63,7 +92,9 @@ if (!empty($_POST)){
 		 <?php if ($error['email'] === 'blank'): ?>
 		<p class ="error">※メールアドレスを入力してください。</p>
 		<?php endif; ?>
-
+		 <?php if ($error['email'] === 'duplicate'): ?>
+		<p class ="error">※指定されたメールアドレスは既に登録されています。</p>
+		<?php endif; ?>
 		<dt>パスワード<span class="required">必須</span></dt>
 		<dd>
         	<input type="password" name="password" size="10" maxlength="20" value="<?php print(htmlspecialchars($_POST['password'],ENT_QUOTES)); ?>" />
@@ -77,6 +108,14 @@ if (!empty($_POST)){
 		<dt>写真など</dt>
 		<dd>
         	<input type="file" name="image" size="35" value="test"  />
+		<?php if ($error['image'] === 'type'): ?>
+		<p class ="error">画像ファイルは「.jpeg」「.png」「.gif」形式でアップロードしてください。</p>
+		<?php endif; ?>
+
+		<?php if (!empty($error)): ?>
+		<p class ="error">恐れ入りますが、画像を再度指定してください。</p>
+		<?php endif; ?>
+  
         </dd>
 	</dl>
 	<div><input type="submit" value="入力内容を確認する" /></div>
