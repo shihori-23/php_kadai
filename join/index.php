@@ -65,8 +65,17 @@ if ($_REQUEST['action'] == 'rewrite' && isset($_SESSION['join'])){
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta http-equiv="X-UA-Compatible" content="ie=edge">
 	<title>会員登録</title>
+	<link href="https://fonts.googleapis.com/css?family=Noto+Sans+JP&display=swap" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="../css/reset.css" />
+	<link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+      integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+      crossorigin="anonymous"
+    />
+	<link rel="stylesheet" type="text/css" href="../css/style.css" />
 
-	<!-- <link rel="stylesheet" href="../style.css" /> -->
+
 </head>
 <body>
 <div id="wrap">
@@ -118,7 +127,7 @@ if ($_REQUEST['action'] == 'rewrite' && isset($_SESSION['join'])){
   
         </dd>
 	</dl>
-	<div><input type="submit" value="入力内容を確認する" /></div>
+	<div><input type="submit" value="入力内容を確認する" class="btn btn-default form_btn"/></div>
 </form>
 </div>
 </body>
